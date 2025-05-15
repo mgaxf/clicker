@@ -1,9 +1,17 @@
+/* Глобальное предотвращение выделения */
+html,
+body,
 * {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent; /* Убираем подсветку при нажатии на всех элементах */
-    user-select: none; /* Запрещаем выделение текста на всех элементах */
 }
 
 body {
@@ -11,6 +19,7 @@ body {
     background-color: #f0f0f0;
     height: 100vh;
     overflow: hidden;
+    touch-action: manipulation;
 }
 
 .background-container {
@@ -36,6 +45,7 @@ body {
     z-index: 1;
     opacity: 0; /* Скрываем градиентный фон, когда есть GIF */
     transition: opacity 1s ease;
+    pointer-events: none;
 }
 
 @keyframes gradientBG {
@@ -60,6 +70,7 @@ body {
     pointer-events: none; /* Блокируем события мыши/тача на гифках */
 }
 
+/* Полностью блокируем интерактивность GIF */
 .bg-gif {
     position: absolute;
     top: 0;
@@ -69,7 +80,8 @@ body {
     object-fit: cover; /* Растягивание сохраняя пропорции */
     opacity: 0;
     transition: opacity 1s ease;
-    pointer-events: none; /* Блокируем события мыши/тача на гифках */
+    pointer-events: none !important; /* Блокируем события мыши/тача на гифках */
+    touch-action: none !important;   /* Блокируем все touch действия */
 }
 
 .bg-gif.active {
@@ -183,6 +195,27 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* Улучшенная кнопка для лучшей работы на мобильных устройствах */
+.upgrade-button, 
+.click-button, 
+.reset-button, 
+.cancel-reset-button, 
+.confirm-reset-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    outline: none !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+}
+
 .upgrade-button {
     display: flex;
     flex-direction: column;
@@ -190,10 +223,8 @@ body {
     justify-content: center;
     padding: 8px 15px;
     border-radius: 10px;
-    border: none;
     background-color: #50c878; /* зеленый цвет */
     color: white;
-    cursor: pointer;
     transition: transform 0.1s, background-color 0.3s;
 }
 
@@ -208,6 +239,7 @@ body {
 .upgrade-button.disabled {
     background-color: #bbbbbb;
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .upgrade-level {
@@ -301,9 +333,7 @@ body {
     font-size: 14px;
     background-color: rgba(220, 20, 60, 0.7); /* Темно-красный цвет */
     color: white;
-    border: none;
     border-radius: 8px;
-    cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
     margin-top: 20px;
     margin-bottom: 10px;
@@ -375,9 +405,7 @@ body {
     padding: 10px 20px;
     background-color: #aaa;
     color: white;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
 
@@ -389,9 +417,7 @@ body {
     padding: 10px 20px;
     background-color: crimson;
     color: white;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
 
@@ -483,31 +509,36 @@ body {
     }
 }
 
+/* Улучшенная главная кнопка */
 .click-button {
     padding: 20px 40px;
     font-size: 24px;
     background-color: #ff6b6b;
     color: white;
-    border: none;
     border-radius: 50px;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.3s;
     position: relative;
-    z-index: 10;
     margin: 20px 0;
-    user-select: none; /* Предотвращает выделение текста при многократных нажатиях */
-    -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии на телефоне */
-    touch-action: manipulation; /* Оптимизирует обработку тач-событий */
-    outline: none; /* Убирает контур фокуса */
+    display: block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s, box-shadow 0.2s;
+    outline: none !important;
 }
 
 .click-button:hover {
     background-color: #ff5252;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .click-button:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Специальные стили для активного состояния на мобильных устройствах */
+.click-button.active {
+    transform: scale(0.96) !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+    background-color: #ff5252 !important;
 }
 
 /* Космический стиль кнопки после покупки энд-геймового улучшения */
@@ -539,7 +570,6 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 5;
-    pointer-events: none; /* Блокируем события мыши/тача для фоновых элементов */
 }
 
 .flying-image {
@@ -548,6 +578,7 @@ body {
     height: 100px;
     opacity: 1;
     transition: opacity 1s;
+    pointer-events: none !important;
 }
 
 /* Стиль для летающих картинок в режиме просветления */
@@ -575,6 +606,22 @@ body {
         font-size: 28px;
         margin: 30px 0;
         min-width: 80%; /* Минимальная ширина кнопки */
+        /* Важные оптимизации для тач-устройств */
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+    }
+    
+    /* Делаем активную область больше физического размера кнопки */
+    .click-button::after {
+        content: '';
+        position: absolute;
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        z-index: -1;
     }
     
     .container {
@@ -624,15 +671,8 @@ body {
     
     .upgrade-button {
         width: 100%;
-        padding: 10px 0;
+        padding: 12px 0;
+        /* Добавляем больше отступов для лучшего распознавания касаний */
+        margin: 5px 0;
     }
-}
-
-/* Убираем выделение и контекстное меню на всех изображениях */
-img {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none; /* Отключает контекстное меню на iOS */
 } 
