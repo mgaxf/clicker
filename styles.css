@@ -88,25 +88,25 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
     position: relative;
     z-index: 10;
-    gap: 20px;
+    padding: 50px 0;
 }
 
 .click-counter-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     padding: 15px 30px;
     border-radius: 20px;
     backdrop-filter: blur(5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+    margin-top: 30px;
 }
 
 .click-counter {
@@ -122,6 +122,361 @@ body {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Стили для блока улучшений */
+.upgrades-container {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: auto;
+}
+
+.upgrades-title {
+    text-align: center;
+    color: white;
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.upgrade-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.15);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.upgrade-item:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.upgrade-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.upgrade-name {
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.upgrade-description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.upgrade-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #50c878; /* зеленый цвет */
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.3s;
+}
+
+.upgrade-button:hover {
+    background-color: #46b26e;
+}
+
+.upgrade-button:active {
+    transform: scale(0.95);
+}
+
+.upgrade-button.disabled {
+    background-color: #bbbbbb;
+    cursor: not-allowed;
+}
+
+.upgrade-level {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.upgrade-cost {
+    font-size: 12px;
+}
+
+/* Стили для ультимативного улучшения */
+.ultimate-upgrade {
+    margin-top: 10px;
+    background-color: rgba(255, 215, 0, 0.2); /* Золотистый фон */
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.ultimate-upgrade:hover {
+    background-color: rgba(255, 215, 0, 0.3);
+    transform: scale(1.07);
+}
+
+.ultimate-upgrade .upgrade-name {
+    color: #FFD700;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.upgrade-button.ultimate {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+}
+
+.upgrade-button.ultimate:hover {
+    background: linear-gradient(45deg, #FFC500, #FF8C00);
+}
+
+.upgrade-button.ultimate.disabled {
+    background: linear-gradient(45deg, #D3D3D3, #A9A9A9);
+}
+
+/* Стили для энд-геймового улучшения */
+.endgame-upgrade {
+    margin-top: 15px;
+    background-color: rgba(138, 43, 226, 0.3); /* Фиолетовый фон */
+    border: 2px solid rgba(138, 43, 226, 0.6);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+    animation: glowPulse 2s infinite alternate;
+}
+
+.endgame-upgrade:hover {
+    background-color: rgba(138, 43, 226, 0.4);
+    transform: scale(1.07);
+}
+
+.endgame-upgrade .upgrade-name {
+    color: #e0b0ff;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(224, 176, 255, 0.8);
+}
+
+.upgrade-button.endgame {
+    background: linear-gradient(45deg, #9932CC, #8A2BE2);
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+}
+
+.upgrade-button.endgame:hover {
+    background: linear-gradient(45deg, #8A2BE2, #9400D3);
+}
+
+.upgrade-button.endgame.disabled {
+    background: linear-gradient(45deg, #D3D3D3, #A9A9A9);
+    box-shadow: none;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(138, 43, 226, 0.8);
+    }
+}
+
+/* Стили для кнопки сброса статистики */
+.reset-button {
+    padding: 8px 15px;
+    font-size: 14px;
+    background-color: rgba(220, 20, 60, 0.7); /* Темно-красный цвет */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.reset-button:hover {
+    background-color: rgba(220, 20, 60, 0.9);
+}
+
+.reset-button:active {
+    transform: scale(0.95);
+}
+
+/* Стили для модального окна подтверждения сброса */
+.reset-confirm-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reset-confirm-box {
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.reset-confirm-box h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.reset-confirm-box p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 16px;
+}
+
+.reset-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.cancel-reset-button {
+    padding: 10px 20px;
+    background-color: #aaa;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.cancel-reset-button:hover {
+    background-color: #999;
+}
+
+.confirm-reset-button {
+    padding: 10px 20px;
+    background-color: crimson;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.confirm-reset-button:hover {
+    background-color: #b00;
+}
+
+.cancel-reset-button:active,
+.confirm-reset-button:active {
+    transform: scale(0.95);
+}
+
+/* Стили для секретного контейнера */
+.secret-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: appear 1s ease-in-out;
+}
+
+.secret-message {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #9932cc, #8A2BE2, #4B0082);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.7);
+    animation: float 3s infinite alternate ease-in-out;
+    max-width: 90%;
+}
+
+.secret-message h1 {
+    color: white;
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.secret-message p {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.secret-code {
+    font-size: 72px;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    animation: pulse 2s infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 .click-button {
     padding: 20px 40px;
     font-size: 24px;
@@ -133,6 +488,7 @@ body {
     transition: transform 0.1s, box-shadow 0.3s;
     position: relative;
     z-index: 10;
+    margin: 20px 0;
 }
 
 .click-button:hover {
@@ -142,6 +498,27 @@ body {
 
 .click-button:active {
     transform: scale(0.95);
+}
+
+/* Космический стиль кнопки после покупки энд-геймового улучшения */
+.click-button.ascended {
+    background: linear-gradient(135deg, #9932cc, #8A2BE2, #4B0082);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+    animation: buttonGlow 3s infinite alternate;
+}
+
+.click-button.ascended:hover {
+    background: linear-gradient(135deg, #8A2BE2, #9932cc, #4B0082);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.9);
+}
+
+@keyframes buttonGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(138, 43, 226, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(138, 43, 226, 0.9);
+    }
 }
 
 .image-container {
@@ -160,4 +537,22 @@ body {
     height: 100px;
     opacity: 1;
     transition: opacity 1s;
+}
+
+/* Стиль для летающих картинок в режиме просветления */
+.flying-image.enlightened {
+    filter: hue-rotate(270deg) brightness(1.2) saturate(1.5);
+    animation: enlightenedSpin 2s linear infinite;
+}
+
+@keyframes enlightenedSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.3);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
 } 

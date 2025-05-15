@@ -3,15 +3,382 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageContainer = document.getElementById('imageContainer');
     const colorBackground = document.getElementById('colorBackground');
     const clickCounter = document.getElementById('clickCounter');
+    const secretContainer = document.getElementById('secretContainer');
+    const endgameUpgradeContainer = document.getElementById('endgameUpgradeContainer');
     
-    // Счетчик кликов
+    // Элементы для сброса статистики
+    const resetButton = document.getElementById('resetButton');
+    const resetConfirmContainer = document.getElementById('resetConfirmContainer');
+    const cancelResetButton = document.getElementById('cancelResetButton');
+    const confirmResetButton = document.getElementById('confirmResetButton');
+    
+    // Элементы улучшений
+    const upgradeClickPowerBtn = document.getElementById('upgradeClickPower');
+    const upgradeAutoClickBtn = document.getElementById('upgradeAutoClick');
+    const upgradeUltimateBtn = document.getElementById('upgradeUltimate');
+    const upgradeEndgameBtn = document.getElementById('upgradeEndgame');
+    const clickPowerLevelElem = document.getElementById('clickPowerLevel');
+    const autoClickLevelElem = document.getElementById('autoClickLevel');
+    const ultimateLevelElem = document.getElementById('ultimateLevel');
+    const endgameLevelElem = document.getElementById('endgameLevel');
+    const clickPowerCostElem = document.getElementById('clickPowerCost');
+    const autoClickCostElem = document.getElementById('autoClickCost');
+    const ultimateCostElem = document.getElementById('ultimateCost');
+    const endgameCostElem = document.getElementById('endgameCost');
+    
+    // Объект с данными об улучшениях
+    const upgrades = {
+        clickPower: {
+            level: 0,
+            baseCost: 50,
+            costMultiplier: 1.5,  // Множитель для увеличения стоимости с каждым уровнем
+            value: 1,  // Базовое значение манго за нажатие
+            increment: 1  // Сколько добавляется за каждый уровень улучшения
+        },
+        autoClick: {
+            level: 0,
+            baseCost: 100,
+            costMultiplier: 1.8,
+            value: 0,  // Базовое значение манго в секунду
+            increment: 5  // Сколько манго в секунду добавляет каждый уровень
+        },
+        ultimate: {
+            purchased: false,
+            cost: 5000,
+            clickPowerBonus: 100,
+            autoClickBonus: 50
+        },
+        endgame: {
+            purchased: false,
+            cost: 200000,
+            visible: false
+        }
+    };
+    
+    // Счетчик манго
     let clickCount = 0;
     
     // Проверка, есть ли сохраненное значение в localStorage
-    if (localStorage.getItem('clickCount')) {
-        clickCount = parseInt(localStorage.getItem('clickCount'));
-        clickCounter.textContent = clickCount;
+    function loadFromLocalStorage() {
+        if (localStorage.getItem('clickCount')) {
+            clickCount = parseInt(localStorage.getItem('clickCount'));
+            clickCounter.textContent = clickCount;
+        }
+        
+        if (localStorage.getItem('upgrades')) {
+            const savedUpgrades = JSON.parse(localStorage.getItem('upgrades'));
+            upgrades.clickPower.level = savedUpgrades.clickPower.level || 0;
+            upgrades.autoClick.level = savedUpgrades.autoClick.level || 0;
+            upgrades.ultimate.purchased = savedUpgrades.ultimate?.purchased || false;
+            upgrades.endgame.purchased = savedUpgrades.endgame?.purchased || false;
+            upgrades.endgame.visible = savedUpgrades.endgame?.visible || false;
+            
+            // Расчет текущих значений на основе уровней
+            upgrades.clickPower.value = 1 + (upgrades.clickPower.level * upgrades.clickPower.increment);
+            upgrades.autoClick.value = upgrades.autoClick.level * upgrades.autoClick.increment;
+            
+            // Если ультимативное улучшение куплено, применяем его бонусы
+            if (upgrades.ultimate.purchased) {
+                upgrades.clickPower.value += upgrades.ultimate.clickPowerBonus;
+                upgrades.autoClick.value += upgrades.ultimate.autoClickBonus;
+                
+                // Показываем эндгейм-апгрейд, если ультимативное куплено
+                upgrades.endgame.visible = true;
+                endgameUpgradeContainer.style.display = 'flex';
+            }
+            
+            // Если энд-геймовое улучшение куплено, применяем эффекты
+            if (upgrades.endgame.purchased) {
+                applyEndgameEffects(false); // false, чтобы не показывать секретный экран при загрузке
+            }
+            
+            // Обновляем отображение
+            updateUpgradesUI();
+        }
     }
+    
+    // Загружаем данные
+    loadFromLocalStorage();
+    
+    // Функция для сохранения прогресса
+    function saveToLocalStorage() {
+        localStorage.setItem('clickCount', clickCount);
+        localStorage.setItem('upgrades', JSON.stringify({
+            clickPower: { level: upgrades.clickPower.level },
+            autoClick: { level: upgrades.autoClick.level },
+            ultimate: { purchased: upgrades.ultimate.purchased },
+            endgame: { purchased: upgrades.endgame.purchased, visible: upgrades.endgame.visible }
+        }));
+    }
+    
+    // Функция для сброса статистики
+    function resetStats() {
+        // Очищаем данные из localStorage
+        localStorage.removeItem('clickCount');
+        localStorage.removeItem('upgrades');
+        
+        // Сбрасываем счетчик
+        clickCount = 0;
+        clickCounter.textContent = '0';
+        
+        // Сбрасываем улучшения
+        upgrades.clickPower.level = 0;
+        upgrades.clickPower.value = 1;
+        upgrades.autoClick.level = 0;
+        upgrades.autoClick.value = 0;
+        upgrades.ultimate.purchased = false;
+        upgrades.endgame.purchased = false;
+        upgrades.endgame.visible = false;
+        
+        // Скрываем элементы энд-гейма
+        endgameUpgradeContainer.style.display = 'none';
+        
+        // Сбрасываем визуальные эффекты
+        clickButton.classList.remove('ascended');
+        
+        // Обновляем интерфейс
+        updateUpgradesUI();
+        
+        // Скрываем окно подтверждения
+        resetConfirmContainer.style.display = 'none';
+    }
+    
+    // Обработчики для сброса статистики
+    resetButton.addEventListener('click', () => {
+        resetConfirmContainer.style.display = 'flex';
+    });
+    
+    cancelResetButton.addEventListener('click', () => {
+        resetConfirmContainer.style.display = 'none';
+    });
+    
+    confirmResetButton.addEventListener('click', resetStats);
+    
+    // Также закрываем окно подтверждения при клике вне блока
+    resetConfirmContainer.addEventListener('click', (e) => {
+        if (e.target === resetConfirmContainer) {
+            resetConfirmContainer.style.display = 'none';
+        }
+    });
+    
+    // Функция расчета стоимости улучшения
+    function calculateUpgradeCost(baseСost, level, multiplier) {
+        return Math.floor(baseСost * Math.pow(multiplier, level));
+    }
+    
+    // Функция обновления интерфейса улучшений
+    function updateUpgradesUI() {
+        // Обновление информации о силе клика
+        const clickPowerCost = calculateUpgradeCost(
+            upgrades.clickPower.baseCost, 
+            upgrades.clickPower.level, 
+            upgrades.clickPower.costMultiplier
+        );
+        clickPowerLevelElem.textContent = `Ур. ${upgrades.clickPower.level}`;
+        clickPowerCostElem.textContent = `${clickPowerCost} манго`;
+        
+        // Если манго недостаточно, делаем кнопку неактивной
+        if (clickCount < clickPowerCost) {
+            upgradeClickPowerBtn.classList.add('disabled');
+        } else {
+            upgradeClickPowerBtn.classList.remove('disabled');
+        }
+        
+        // Обновление информации об автоклике
+        const autoClickCost = calculateUpgradeCost(
+            upgrades.autoClick.baseCost, 
+            upgrades.autoClick.level, 
+            upgrades.autoClick.costMultiplier
+        );
+        autoClickLevelElem.textContent = `Ур. ${upgrades.autoClick.level}`;
+        autoClickCostElem.textContent = `${autoClickCost} манго`;
+        
+        // Если манго недостаточно, делаем кнопку неактивной
+        if (clickCount < autoClickCost) {
+            upgradeAutoClickBtn.classList.add('disabled');
+        } else {
+            upgradeAutoClickBtn.classList.remove('disabled');
+        }
+        
+        // Обновление информации об ультимативном улучшении
+        if (upgrades.ultimate.purchased) {
+            ultimateLevelElem.textContent = `КУПЛЕНО`;
+            ultimateCostElem.textContent = `МАКС`;
+            upgradeUltimateBtn.classList.add('disabled');
+        } else {
+            ultimateLevelElem.textContent = `ЗАКРЫТО`;
+            ultimateCostElem.textContent = `${upgrades.ultimate.cost} манго`;
+            
+            if (clickCount < upgrades.ultimate.cost) {
+                upgradeUltimateBtn.classList.add('disabled');
+            } else {
+                upgradeUltimateBtn.classList.remove('disabled');
+            }
+        }
+        
+        // Показываем эндгейм-апгрейд, только если ультимативное куплено
+        if (upgrades.endgame.visible) {
+            endgameUpgradeContainer.style.display = 'flex';
+            
+            // Обновление информации об энд-геймовом улучшении
+            if (upgrades.endgame.purchased) {
+                endgameLevelElem.textContent = `ПРОСВЕТЛЕНИЕ`;
+                endgameCostElem.textContent = `ДОСТИГНУТО`;
+                upgradeEndgameBtn.classList.add('disabled');
+            } else {
+                endgameLevelElem.textContent = `???`;
+                endgameCostElem.textContent = `${upgrades.endgame.cost} манго`;
+                
+                if (clickCount < upgrades.endgame.cost) {
+                    upgradeEndgameBtn.classList.add('disabled');
+                } else {
+                    upgradeEndgameBtn.classList.remove('disabled');
+                }
+            }
+        } else {
+            endgameUpgradeContainer.style.display = 'none';
+        }
+    }
+    
+    // Функция для покупки улучшения силы клика
+    function upgradeClickPower() {
+        const cost = calculateUpgradeCost(
+            upgrades.clickPower.baseCost, 
+            upgrades.clickPower.level, 
+            upgrades.clickPower.costMultiplier
+        );
+        
+        if (clickCount >= cost) {
+            // Списываем манго
+            clickCount -= cost;
+            clickCounter.textContent = clickCount;
+            
+            // Увеличиваем уровень и силу клика
+            upgrades.clickPower.level++;
+            upgrades.clickPower.value = 1 + (upgrades.clickPower.level * upgrades.clickPower.increment);
+            
+            // Если ультимативное улучшение куплено, добавляем его бонус
+            if (upgrades.ultimate.purchased) {
+                upgrades.clickPower.value += upgrades.ultimate.clickPowerBonus;
+            }
+            
+            // Обновляем интерфейс и сохраняем прогресс
+            updateUpgradesUI();
+            saveToLocalStorage();
+        }
+    }
+    
+    // Функция для покупки улучшения автоклика
+    function upgradeAutoClick() {
+        const cost = calculateUpgradeCost(
+            upgrades.autoClick.baseCost, 
+            upgrades.autoClick.level, 
+            upgrades.autoClick.costMultiplier
+        );
+        
+        if (clickCount >= cost) {
+            // Списываем манго
+            clickCount -= cost;
+            clickCounter.textContent = clickCount;
+            
+            // Увеличиваем уровень и скорость автоклика
+            upgrades.autoClick.level++;
+            upgrades.autoClick.value = upgrades.autoClick.level * upgrades.autoClick.increment;
+            
+            // Если ультимативное улучшение куплено, добавляем его бонус
+            if (upgrades.ultimate.purchased) {
+                upgrades.autoClick.value += upgrades.ultimate.autoClickBonus;
+            }
+            
+            // Обновляем интерфейс и сохраняем прогресс
+            updateUpgradesUI();
+            saveToLocalStorage();
+        }
+    }
+    
+    // Функция для покупки ультимативного улучшения
+    function upgradeUltimate() {
+        if (!upgrades.ultimate.purchased && clickCount >= upgrades.ultimate.cost) {
+            // Списываем манго
+            clickCount -= upgrades.ultimate.cost;
+            clickCounter.textContent = clickCount;
+            
+            // Помечаем как купленное
+            upgrades.ultimate.purchased = true;
+            
+            // Применяем бонусы
+            upgrades.clickPower.value += upgrades.ultimate.clickPowerBonus;
+            upgrades.autoClick.value += upgrades.ultimate.autoClickBonus;
+            
+            // Эффект покупки - много изображений сразу
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createFlyingImage();
+                }, i * 50);
+            }
+            
+            // Показываем энд-геймовое улучшение
+            upgrades.endgame.visible = true;
+            endgameUpgradeContainer.style.display = 'flex';
+            
+            // Обновляем интерфейс и сохраняем прогресс
+            updateUpgradesUI();
+            saveToLocalStorage();
+        }
+    }
+    
+    // Функция для покупки энд-геймового улучшения
+    function upgradeEndgame() {
+        if (!upgrades.endgame.purchased && upgrades.ultimate.purchased && clickCount >= upgrades.endgame.cost) {
+            // Списываем манго
+            clickCount -= upgrades.endgame.cost;
+            clickCounter.textContent = clickCount;
+            
+            // Помечаем как купленное
+            upgrades.endgame.purchased = true;
+            
+            // Применяем эффекты
+            applyEndgameEffects(true);
+            
+            // Обновляем интерфейс и сохраняем прогресс
+            updateUpgradesUI();
+            saveToLocalStorage();
+        }
+    }
+    
+    // Применение эндгейм эффектов
+    function applyEndgameEffects(showSecret = true) {
+        // Добавляем класс к кнопке
+        clickButton.classList.add('ascended');
+        
+        // Показываем секретное сообщение только если требуется
+        if (showSecret) {
+            secretContainer.style.display = 'flex';
+            
+            // Через 5 секунд скрываем секретное сообщение
+            setTimeout(() => {
+                secretContainer.style.display = 'none';
+            }, 5000);
+        }
+    }
+    
+    // Обработчики для кнопок улучшений
+    upgradeClickPowerBtn.addEventListener('click', upgradeClickPower);
+    upgradeAutoClickBtn.addEventListener('click', upgradeAutoClick);
+    upgradeUltimateBtn.addEventListener('click', upgradeUltimate);
+    upgradeEndgameBtn.addEventListener('click', upgradeEndgame);
+    
+    // Автоматическое добавление манго каждую секунду на основе улучшения автоклика
+    setInterval(() => {
+        if (upgrades.autoClick.value > 0) {
+            clickCount += upgrades.autoClick.value;
+            clickCounter.textContent = clickCount;
+            saveToLocalStorage();
+            
+            // Обновляем UI улучшений, так как могли появиться доступные покупки
+            updateUpgradesUI();
+        }
+    }, 1000);
     
     // Получение элементов GIF
     const bgGif1 = document.getElementById('bgGif1');
@@ -119,6 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = imagePath;
         img.classList.add('flying-image');
         
+        // Если куплено энд-геймовое улучшение, добавляем класс для особой анимации
+        if (upgrades.endgame.purchased) {
+            img.classList.add('enlightened');
+        }
+        
         // Расчет случайной позиции для появления изображения (относительно кнопки)
         const buttonRect = clickButton.getBoundingClientRect();
         const buttonCenterX = buttonRect.left + buttonRect.width / 2;
@@ -144,7 +516,11 @@ document.addEventListener('DOMContentLoaded', () => {
             img.style.transition = 'left 1.5s ease-out, top 1.5s ease-out, transform 1.5s ease-out, opacity 1.5s ease-out';
             img.style.left = `${targetX}px`;
             img.style.top = `${targetY}px`;
-            img.style.transform = 'rotate(' + (Math.random() * 720 - 360) + 'deg) scale(' + (0.5 + Math.random() * 1.5) + ')';
+            
+            // Для обычного режима - поворот и масштабирование
+            if (!upgrades.endgame.purchased) {
+                img.style.transform = 'rotate(' + (Math.random() * 720 - 360) + 'deg) scale(' + (0.5 + Math.random() * 1.5) + ')';
+            }
             
             // Удаление изображения после завершения анимации
             setTimeout(() => {
@@ -164,14 +540,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200);
     }
     
+    // Обновляем UI улучшений при загрузке страницы
+    updateUpgradesUI();
+    
     // Обработчик клика на кнопку
     clickButton.addEventListener('click', () => {
-        // Увеличение счетчика
-        clickCount++;
+        // Увеличение счетчика (с учетом силы клика)
+        clickCount += upgrades.clickPower.value;
         clickCounter.textContent = clickCount;
         
         // Сохранение счетчика в localStorage
-        localStorage.setItem('clickCount', clickCount);
+        saveToLocalStorage();
         
         // Анимация счетчика
         animateCounter();
@@ -186,6 +565,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Создание летящего изображения
         createFlyingImage();
+        
+        // Обновляем UI улучшений
+        updateUpgradesUI();
         
         // Эффект нажатия на кнопку
         clickButton.classList.add('active');

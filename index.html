@@ -21,12 +21,80 @@
     <div class="container">
         <div class="click-counter-container">
             <div id="clickCounter" class="click-counter">0</div>
-            <div class="click-counter-label">Кликов</div>
+            <div class="click-counter-label">Манго</div>
         </div>
+        
         <button id="clickButton" class="click-button">нажми если сосал</button>
+        
+        <div class="upgrades-container">
+            <h2 class="upgrades-title">Улучшения</h2>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">+1 манго за нажатие</div>
+                    <div class="upgrade-description">Добавляет +1 манго за каждое нажатие</div>
+                </div>
+                <button id="upgradeClickPower" class="upgrade-button">
+                    <span class="upgrade-level" id="clickPowerLevel">Ур. 0</span>
+                    <span class="upgrade-cost" id="clickPowerCost">50 манго</span>
+                </button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Автоматические манго</div>
+                    <div class="upgrade-description">+5 манго в секунду автоматически</div>
+                </div>
+                <button id="upgradeAutoClick" class="upgrade-button">
+                    <span class="upgrade-level" id="autoClickLevel">Ур. 0</span>
+                    <span class="upgrade-cost" id="autoClickCost">100 манго</span>
+                </button>
+            </div>
+            <div class="upgrade-item ultimate-upgrade">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">УЛЬТРА МАНГО</div>
+                    <div class="upgrade-description">+100 манго за нажатие и +50 в секунду</div>
+                </div>
+                <button id="upgradeUltimate" class="upgrade-button ultimate">
+                    <span class="upgrade-level" id="ultimateLevel">ЗАКРЫТО</span>
+                    <span class="upgrade-cost" id="ultimateCost">5000 манго</span>
+                </button>
+            </div>
+            <div class="upgrade-item endgame-upgrade" id="endgameUpgradeContainer" style="display: none;">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">КЛЯНУСЬ МАНГО</div>
+                    <div class="upgrade-description">Открывает истинную силу манго</div>
+                </div>
+                <button id="upgradeEndgame" class="upgrade-button endgame">
+                    <span class="upgrade-level" id="endgameLevel">???</span>
+                    <span class="upgrade-cost" id="endgameCost">200000 манго</span>
+                </button>
+            </div>
+        </div>
+        
+        <button id="resetButton" class="reset-button">Сбросить статистику</button>
     </div>
     
     <div id="imageContainer" class="image-container"></div>
+    
+    <!-- Секретный контейнер для энд-геймового эффекта -->
+    <div id="secretContainer" class="secret-container" style="display: none;">
+        <div class="secret-message">
+            <h1>ТЫ ДОСТИГ ПРОСВЕТЛЕНИЯ МАНГО</h1>
+            <p>Теперь ты знаешь тайну всего сущего</p>
+            <div class="secret-code">42</div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно подтверждения сброса -->
+    <div id="resetConfirmContainer" class="reset-confirm-container" style="display: none;">
+        <div class="reset-confirm-box">
+            <h2>Сбросить прогресс?</h2>
+            <p>Все манго и улучшения будут потеряны. Это действие нельзя отменить.</p>
+            <div class="reset-buttons">
+                <button id="cancelResetButton" class="cancel-reset-button">Отмена</button>
+                <button id="confirmResetButton" class="confirm-reset-button">Сбросить</button>
+            </div>
+        </div>
+    </div>
     
     <script src="script.js"></script>
 </body>
