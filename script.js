@@ -58,6 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Счетчик манго
     let clickCount = 0;
     
+    // Переменные для оптимизации производительности
+    let flyingImagesCount = 0;
+    const MAX_FLYING_IMAGES = 20; // Максимальное число летающих изображений
+    let lastClickTime = 0;
+    const CLICK_THROTTLE = 50; // Минимальный интервал между обработками кликов в мс
+    let pendingUIUpdate = false; // Флаг для предотвращения слишком частых обновлений UI
+    
     // Проверка, есть ли сохраненное значение в localStorage
     function loadFromLocalStorage() {
         if (localStorage.getItem('clickCount')) {
@@ -100,15 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Загружаем данные
     loadFromLocalStorage();
     
-    // Функция для сохранения прогресса
+    // Оптимизация работы с localStorage - отложенное сохранение
+    let saveTimeout = null;
     function saveToLocalStorage() {
-        localStorage.setItem('clickCount', clickCount);
-        localStorage.setItem('upgrades', JSON.stringify({
-            clickPower: { level: upgrades.clickPower.level },
-            autoClick: { level: upgrades.autoClick.level },
-            ultimate: { purchased: upgrades.ultimate.purchased },
-            endgame: { purchased: upgrades.endgame.purchased, visible: upgrades.endgame.visible }
-        }));
+        if (saveTimeout) {
+            clearTimeout(saveTimeout);
+        }
+        
+        saveTimeout = setTimeout(() => {
+            localStorage.setItem('clickCount', clickCount);
+            localStorage.setItem('upgrades', JSON.stringify({
+                clickPower: { level: upgrades.clickPower.level },
+                autoClick: { level: upgrades.autoClick.level },
+                ultimate: { purchased: upgrades.ultimate.purchased },
+                endgame: { purchased: upgrades.endgame.purchased, visible: upgrades.endgame.visible }
+            }));
+        }, 1000); // Откладываем сохранение на 1 секунду
     }
     
     // Функция для сброса статистики
@@ -433,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Функция для автоматического переключения GIF
+    // Функция для автоматического переключения GIF - оптимизированная
     function startGifRotation() {
         let currentGifIndex = 0;
         
@@ -451,8 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bgGifs[currentGifIndex].classList.add('active');
         }
         
-        // Запускаем переключение каждые 5 секунд
-        setInterval(rotateGifs, 5000);
+        // Запускаем переключение каждые 8 секунд (увеличен интервал для меньшей нагрузки)
+        setInterval(rotateGifs, 8000);
     }
     
     // Массив для путей к изображениям
@@ -477,6 +491,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Функция для создания и анимации летящего изображения
     function createFlyingImage() {
+        // Ограничиваем количество одновременных анимаций
+        if (flyingImagesCount >= MAX_FLYING_IMAGES) {
+            return;
+        }
+        
+        flyingImagesCount++;
+        
         // Получение случайного пути к изображению из массива
         const randomIndex = Math.floor(Math.random() * imagePaths.length);
         const imagePath = imagePaths[randomIndex];
@@ -503,8 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Добавление изображения на страницу
         imageContainer.appendChild(img);
         
-        // Анимация полета в случайном направлении
-        setTimeout(() => {
+        // Используем requestAnimationFrame для более плавной анимации
+        requestAnimationFrame(() => {
             // Случайное направление и расстояние полета
             const angle = Math.random() * Math.PI * 2; // Случайный угол в радианах
             const distance = 300 + Math.random() * 200; // Расстояние полета (300-500px)
@@ -526,19 +547,63 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 img.style.opacity = '0';
                 setTimeout(() => {
-                    imageContainer.removeChild(img);
+                    if (imageContainer.contains(img)) {
+                        imageContainer.removeChild(img);
+                    }
+                    flyingImagesCount--;
                 }, 1000);
             }, 1000);
-        }, 10);
+        });
     }
     
-    // Функция для анимации счетчика
+    // Функция для анимации счетчика с использованием requestAnimationFrame
     function animateCounter() {
-        clickCounter.style.transform = 'scale(1.2)';
-        setTimeout(() => {
-            clickCounter.style.transform = 'scale(1)';
-        }, 200);
+        const counter = clickCounter;
+        let start = null;
+        const duration = 200; // Длительность анимации в мс
+        
+        function animate(timestamp) {
+            if (!start) start = timestamp;
+            const progress = timestamp - start;
+            
+            // Вычисляем масштаб от 1 до 1.2 и обратно
+            const scale = progress < duration / 2 
+                ? 1 + 0.2 * (progress / (duration / 2)) 
+                : 1.2 - 0.2 * ((progress - duration / 2) / (duration / 2));
+            
+            counter.style.transform = `scale(${Math.min(scale, 1.2)})`;
+            
+            if (progress < duration) {
+                requestAnimationFrame(animate);
+            } else {
+                counter.style.transform = 'scale(1)';
+            }
+        }
+        
+        requestAnimationFrame(animate);
     }
+    
+    // Функция для обновления UI - с предотвращением частых вызовов
+    function updateUpgradesUIDebounced() {
+        if (!pendingUIUpdate) {
+            pendingUIUpdate = true;
+            requestAnimationFrame(() => {
+                updateUpgradesUI();
+                pendingUIUpdate = false;
+            });
+        }
+    }
+    
+    // Предзагрузка изображений для предотвращения задержек
+    function preloadImages() {
+        imagePaths.forEach(path => {
+            const img = new Image();
+            img.src = path;
+        });
+    }
+    
+    // Вызываем предзагрузку при загрузке страницы
+    preloadImages();
     
     // Обновляем UI улучшений при загрузке страницы
     updateUpgradesUI();
@@ -558,14 +623,23 @@ document.addEventListener('DOMContentLoaded', () => {
         handleButtonClick();
     }, { passive: false });
     
-    // Единая функция обработки клика для повторного использования
+    // Единая функция обработки клика с троттлингом
     function handleButtonClick() {
+        const now = Date.now();
+        // Проверяем, прошло ли достаточно времени с последнего клика
+        if (now - lastClickTime < CLICK_THROTTLE) {
+            return;
+        }
+        lastClickTime = now;
+        
         // Увеличение счетчика (с учетом силы клика)
         clickCount += upgrades.clickPower.value;
         clickCounter.textContent = clickCount;
         
-        // Сохранение счетчика в localStorage
-        saveToLocalStorage();
+        // Сохранение счетчика в localStorage - ограничиваем частоту
+        if (now % 5 === 0) { // Сохраняем каждый 5-й клик
+            saveToLocalStorage();
+        }
         
         // Анимация счетчика
         animateCounter();
@@ -582,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createFlyingImage();
         
         // Обновляем UI улучшений
-        updateUpgradesUI();
+        updateUpgradesUIDebounced();
     }
     
     // Дополнительные обработчики для предотвращения залипания кнопок на мобильных устройствах
