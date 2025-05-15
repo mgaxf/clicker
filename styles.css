@@ -489,6 +489,9 @@ body {
     position: relative;
     z-index: 10;
     margin: 20px 0;
+    user-select: none; /* Предотвращает выделение текста при многократных нажатиях */
+    -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии на телефоне */
+    touch-action: manipulation; /* Оптимизирует обработку тач-событий */
 }
 
 .click-button:hover {
@@ -554,5 +557,65 @@ body {
     }
     100% {
         transform: rotate(360deg) scale(1);
+    }
+}
+
+/* Медиа-запросы для мобильных устройств */
+@media (max-width: 768px) {
+    .click-button {
+        padding: 25px 50px; /* Увеличиваем размеры кнопки на мобильных */
+        font-size: 28px;
+        margin: 30px 0;
+        min-width: 80%; /* Минимальная ширина кнопки */
+    }
+    
+    .container {
+        padding: 30px 0;
+    }
+    
+    .upgrades-container {
+        max-width: 90%;
+        margin-top: 20px;
+    }
+    
+    .reset-button {
+        padding: 12px 25px;
+        font-size: 16px;
+        margin-top: 30px;
+    }
+    
+    .reset-confirm-box {
+        width: 95%;
+        padding: 20px;
+    }
+}
+
+/* Еще более крупные кнопки для маленьких экранов */
+@media (max-width: 480px) {
+    .click-button {
+        padding: 30px 50px;
+        font-size: 26px;
+        min-width: 90%;
+    }
+    
+    .click-counter {
+        font-size: 42px;
+    }
+    
+    .upgrade-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .upgrade-info {
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    
+    .upgrade-button {
+        width: 100%;
+        padding: 10px 0;
     }
 } 

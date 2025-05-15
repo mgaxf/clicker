@@ -544,7 +544,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUpgradesUI();
     
     // Обработчик клика на кнопку
-    clickButton.addEventListener('click', () => {
+    clickButton.addEventListener('click', handleButtonClick);
+    
+    // Добавление поддержки touch-событий для мобильных устройств
+    clickButton.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // Предотвращаем стандартное поведение браузера
+        clickButton.classList.add('active');
+    }, { passive: false });
+    
+    clickButton.addEventListener('touchend', function(e) {
+        e.preventDefault(); // Предотвращаем стандартное поведение браузера
+        clickButton.classList.remove('active');
+        handleButtonClick();
+    }, { passive: false });
+    
+    // Единая функция обработки клика для повторного использования
+    function handleButtonClick() {
         // Увеличение счетчика (с учетом силы клика)
         clickCount += upgrades.clickPower.value;
         clickCounter.textContent = clickCount;
@@ -568,11 +583,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Обновляем UI улучшений
         updateUpgradesUI();
-        
-        // Эффект нажатия на кнопку
-        clickButton.classList.add('active');
-        setTimeout(() => {
-            clickButton.classList.remove('active');
-        }, 100);
-    });
+    }
+    
+    // Дополнительные обработчики для предотвращения залипания кнопок на мобильных устройствах
+    document.addEventListener('touchmove', function(e) {
+        if (e.target === clickButton) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Предотвращаем зум при двойном тапе
+    document.addEventListener('dblclick', function(e) {
+        e.preventDefault();
+    }, { passive: false });
 }); 
