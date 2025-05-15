@@ -596,4 +596,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
     }, { passive: false });
+    
+    // Предотвращаем контекстное меню на мобильных устройствах
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    }, { passive: false });
+    
+    // Предотвращаем выделение текста при длительном нажатии
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+    }, { passive: false });
+    
+    // Предотвращаем стандартное поведение при длительном нажатии для iOS
+    document.addEventListener('touchstart', function(e) {
+        // Если это не кнопка или поле ввода, блокируем длительное нажатие
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Блокируем действия с изображениями
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        img.addEventListener('dragstart', e => e.preventDefault());
+        img.addEventListener('contextmenu', e => e.preventDefault());
+    });
 }); 

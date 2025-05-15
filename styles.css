@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Убираем подсветку при нажатии на всех элементах */
+    user-select: none; /* Запрещаем выделение текста на всех элементах */
 }
 
 body {
@@ -19,6 +21,7 @@ body {
     height: 100%;
     z-index: 0;
     overflow: hidden;
+    pointer-events: none; /* Блокируем события мыши/тача для фоновых элементов */
 }
 
 .color-background {
@@ -54,6 +57,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 2;
+    pointer-events: none; /* Блокируем события мыши/тача на гифках */
 }
 
 .bg-gif {
@@ -65,6 +69,7 @@ body {
     object-fit: cover; /* Растягивание сохраняя пропорции */
     opacity: 0;
     transition: opacity 1s ease;
+    pointer-events: none; /* Блокируем события мыши/тача на гифках */
 }
 
 .bg-gif.active {
@@ -94,6 +99,7 @@ body {
     position: relative;
     z-index: 10;
     padding: 50px 0;
+    touch-action: manipulation; /* Оптимизирует обработку тач-событий */
 }
 
 .click-counter-container {
@@ -492,6 +498,7 @@ body {
     user-select: none; /* Предотвращает выделение текста при многократных нажатиях */
     -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии на телефоне */
     touch-action: manipulation; /* Оптимизирует обработку тач-событий */
+    outline: none; /* Убирает контур фокуса */
 }
 
 .click-button:hover {
@@ -532,6 +539,7 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 5;
+    pointer-events: none; /* Блокируем события мыши/тача для фоновых элементов */
 }
 
 .flying-image {
@@ -618,4 +626,13 @@ body {
         width: 100%;
         padding: 10px 0;
     }
+}
+
+/* Убираем выделение и контекстное меню на всех изображениях */
+img {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none; /* Отключает контекстное меню на iOS */
 } 
