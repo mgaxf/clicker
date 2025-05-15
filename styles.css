@@ -125,6 +125,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     margin-top: 30px;
+    order: 1; /* Первый элемент - вверху */
 }
 
 .click-counter {
@@ -152,6 +153,8 @@ body {
     backdrop-filter: blur(5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-top: auto;
+    order: 3; /* Третий элемент - внизу */
+    margin-bottom: 10px;
 }
 
 .upgrades-title {
@@ -335,9 +338,10 @@ body {
     color: white;
     border-radius: 8px;
     transition: background-color 0.3s, transform 0.1s;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    order: 4; /* Четвертый элемент */
 }
 
 .reset-button:hover {
@@ -522,6 +526,8 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.1s, box-shadow 0.2s;
     outline: none !important;
+    order: 2; /* Второй элемент - по центру */
+    align-self: center; /* Центрирование */
 }
 
 .click-button:hover {
@@ -605,16 +611,30 @@ body {
         overflow: auto; /* Разрешаем скролл на мобильных */
     }
 
+    .container {
+        padding: 15px 0;
+        justify-content: space-between; /* Распределяем элементы по вертикали */
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto; /* Добавляем вертикальную прокрутку */
+        display: grid;
+        grid-template-rows: auto 1fr auto auto; /* Разделение на сетку для лучшего позиционирования */
+    }
+    
+    .click-counter-container {
+        margin-top: 10px;
+        padding: 8px 15px;
+        order: 1; /* Вверху */
+    }
+    
     .click-button {
-        padding: 15px 30px; /* Уменьшаем размеры кнопки */
+        padding: 15px 30px;
         font-size: 22px;
-        margin: 15px 0;
-        min-width: 80%; /* Минимальная ширина кнопки */
-        /* Важные оптимизации для тач-устройств */
-        touch-action: manipulation !important;
-        -webkit-tap-highlight-color: transparent !important;
-        -webkit-touch-callout: none !important;
-        -webkit-user-select: none !important;
+        margin: 0;
+        min-width: 80%;
+        align-self: center;
+        justify-self: center;
+        order: 2; /* По центру */
     }
     
     /* Делаем активную область больше физического размера кнопки */
@@ -628,23 +648,16 @@ body {
         z-index: -1;
     }
     
-    .container {
-        padding: 15px 0;
-        justify-content: flex-start; /* Изменяем на расположение сверху вниз */
-        height: auto;
-        min-height: 100vh;
-        overflow-y: auto; /* Добавляем вертикальную прокрутку */
-    }
-    
     .upgrades-container {
         max-width: 90%;
         margin-top: 10px;
-        margin-bottom: 20px;
-        max-height: 50vh; /* Ограничиваем высоту */
+        margin-bottom: 10px;
+        max-height: 40vh; /* Ограничиваем высоту */
         overflow-y: auto; /* Добавляем прокрутку */
         padding: 12px;
+        order: 3; /* Внизу */
     }
-
+    
     /* Стилизация скроллбара */
     .upgrades-container::-webkit-scrollbar {
         width: 8px;
@@ -669,16 +682,12 @@ body {
         font-size: 16px;
         margin-top: 5px;
         margin-bottom: 15px;
+        order: 4; /* Самый нижний */
     }
     
     .reset-confirm-box {
         width: 95%;
         padding: 20px;
-    }
-    
-    .click-counter-container {
-        margin-top: 10px;
-        padding: 8px 15px;
     }
 }
 
