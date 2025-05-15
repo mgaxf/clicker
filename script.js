@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const clickButton = document.getElementById('clickButton');
     const imageContainer = document.getElementById('imageContainer');
     const colorBackground = document.getElementById('colorBackground');
+    const clickCounter = document.getElementById('clickCounter');
+    
+    // Счетчик кликов
+    let clickCount = 0;
+    
+    // Проверка, есть ли сохраненное значение в localStorage
+    if (localStorage.getItem('clickCount')) {
+        clickCount = parseInt(localStorage.getItem('clickCount'));
+        clickCounter.textContent = clickCount;
+    }
     
     // Получение элементов GIF
     const bgGif1 = document.getElementById('bgGif1');
@@ -146,8 +156,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
     }
     
+    // Функция для анимации счетчика
+    function animateCounter() {
+        clickCounter.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            clickCounter.style.transform = 'scale(1)';
+        }, 200);
+    }
+    
     // Обработчик клика на кнопку
     clickButton.addEventListener('click', () => {
+        // Увеличение счетчика
+        clickCount++;
+        clickCounter.textContent = clickCount;
+        
+        // Сохранение счетчика в localStorage
+        localStorage.setItem('clickCount', clickCount);
+        
+        // Анимация счетчика
+        animateCounter();
+        
         // Воспроизведение звука
         if (audioElement) {
             audioElement.currentTime = 0; // Перемотка в начало
